@@ -1,22 +1,26 @@
 package main
 
 import (
-	"database/sql"
+	"context"
+	"github.com/jackc/pgx/v4"
+
 	"encoding/json"
+
 	"errors"
+
 	"fmt"
+
+	"github.com/jackc/pgx/v4/pgxpool"
 	"io"
+
 	"log"
 	"net/http"
-	"os"
 	"time"
 
-	_ "github.com/jackc/pgx/v4/stdlib"
-	_ "github.com/joho/godotenv/autoload"
 	"github.com/julienschmidt/httprouter"
 )
 
-var db *sql.DB
+var db *pgxpool.Pool
 
 type data struct {
 	Date     string  `json:"date"`
@@ -26,20 +30,15 @@ type data struct {
 }
 
 func main() {
-	dsn := os.Getenv("dsn")
 
 	var err error
+	const conString = "postgres://pfc:L0ktar0gar@127.0.0.1:5432/dpfc"
+	db, err = pgxpool.Connect(context.Background(), conString)
 
-	db, err = sql.Open("pgx", dsn)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	defer db.Close()
-
-	err = db.Ping()
-	if err != nil {
-		log.Fatalln(err)
-	}
 
 	router := httprouter.New()
 
@@ -69,13 +68,10 @@ func plusHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	_, err = db.Exec(`
+	_, err = db.Exec(context.Background(), `
 		INSERT INTO pfc (date, proteins, fats, carbs)
-
 		VALUES ($1, $2, $3, $4)
-
 		ON CONFLICT (date) DO UPDATE SET
-
 		proteins = pfc.proteins + $2, fats = pfc.fats + $3, carbs = pfc.carbs + $4;`, request.Date, request.Proteins, request.Fats, request.Carbs)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -95,11 +91,9 @@ func minusHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	_, err = db.Exec(`
+	_, err = db.Exec(context.Background(), `
 		UPDATE pfc SET
-
 		proteins = GREATEST(pfc.proteins - $2, 0), fats = GREATEST(pfc.fats - $3, 0), carbs = GREATEST(pfc.carbs - $4, 0)
-
 		WHERE date = $1;`, request.Date, request.Proteins, request.Fats, request.Carbs)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -125,14 +119,15 @@ func getHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		response.Date = currentDate()
 	}
 
-	err := db.QueryRow("SELECT proteins, fats, carbs FROM pfc WHERE date=$1", response.Date).Scan(
+	err := db.QueryRow(context.Background(), "SELECT proteins, fats, carbs FROM pfc WHERE date=$1", response.Date).Scan(
 		&response.Proteins,
 		&response.Fats,
 		&response.Carbs,
 	)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Возникла внутреняя ошибка сервера"))
+
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("404"))
 		return
 	}
 
