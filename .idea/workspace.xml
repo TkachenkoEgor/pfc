@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="54b79d40-8c10-4b50-896d-b66b5692694f" name="Changes" comment="fixed code style">
-      <change beforePath="$PROJECT_DIR$/.idea/pfc.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/pfc.iml" afterDir="false" />
+    <list default="true" id="54b79d40-8c10-4b50-896d-b66b5692694f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>

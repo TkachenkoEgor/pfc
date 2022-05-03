@@ -11,33 +11,44 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
 var db *pgxpool.Pool
 
-type data struct {
+type Data struct {
 	Date     string  `json:"date"`
 	Proteins float64 `json:"proteins"`
 	Fats     float64 `json:"fats"`
 	Carbs    float64 `json:"carbs"`
 }
 
+func (d *Data) Error() string {
+	return ""
+}
+
+var ErrData = &Data{}
+
 func main() {
+	os.Exit(realMain())
+}
+
+func realMain() int {
 	var err error
 	const connString = "postgres://pfc:L0ktar0gar@127.0.0.1:5432/dpfc"
 
 	db, err = pgxpool.Connect(context.Background(), connString)
 	if err != nil {
-		log.Fatalln(err)
+		log.Print(err)
+		return 1
 	}
 	defer db.Close()
 
 	router := httprouter.New()
-
-	router.POST("/plus", plusHandler)
-	router.POST("/minus", minusHandler)
-	router.GET("/get", getHandler)
+	router.POST("/pfc", handler(plusHandler))
+	router.PATCH("/pfc", handler(minusHandler))
+	router.GET("/pfc", handler(getHandler))
 
 	server := &http.Server{
 		Addr:              ":8080",
@@ -48,19 +59,43 @@ func main() {
 		IdleTimeout:       15 * time.Second,
 	}
 
-	if err := server.ListenAndServe(); err != nil {
+	if err = server.ListenAndServe(); err != nil {
 		log.Fatalln(err)
 	}
 
 	fmt.Println("hhhh")
+
+	return 0
 }
 
-func plusHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	request, err := readRequestBody(r)
+type handlerFunc func(http.ResponseWriter, *http.Request, httprouter.Params) error
+
+var ErrBadRequest = errors.New("bad request")
+var ErrNotFound = errors.New("not found")
+
+func handler(f handlerFunc) httprouter.Handle {
+	return func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+		err := f(writer, request, params)
+		if err != nil {
+			if errors.Is(err, ErrBadRequest) {
+				writer.WriteHeader(http.StatusBadRequest)
+			} else if errors.Is(err, pgx.ErrNoRows) {
+				writer.WriteHeader(http.StatusNotFound)
+			} else if errors.Is(err, ErrNotFound) {
+				writer.WriteHeader(http.StatusNotFound)
+			} else {
+				writer.WriteHeader(http.StatusInternalServerError)
+				writer.Write([]byte(err.Error()))
+			}
+			return
+		}
+	}
+}
+
+func plusHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) error {
+	data, err := readBodyData(r)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
-		return
+		return err
 	}
 
 	_, err = db.Exec(context.Background(), `
@@ -68,101 +103,102 @@ func plusHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		VALUES ($1, $2, $3, $4)
 		ON CONFLICT (date) DO 
         UPDATE SET proteins = pfc.proteins + $2, fats = pfc.fats + $3, carbs = pfc.carbs + $4;`,
-		request.Date, request.Proteins, request.Fats, request.Carbs)
+		data.Date, data.Proteins, data.Fats, data.Carbs)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Возникла внутреняя ошибка сервера"))
-		return
+		return err
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("ok"))
+	w.WriteHeader(http.StatusResetContent)
+
+	return nil
 }
 
-func minusHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	request, err := readRequestBody(r)
+func minusHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) error {
+	data, err := readBodyData(r)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
-		return
+		return err
 	}
 
-	_, err = db.Exec(context.Background(),
+	tag, err := db.Exec(context.Background(),
 		"UPDATE pfc "+
 			"SET proteins = GREATEST(pfc.proteins - $2, 0), "+
 			"fats = GREATEST(pfc.fats - $3, 0), "+
 			"carbs = GREATEST(pfc.carbs - $4, 0) "+
 			"WHERE date = $1",
-		request.Date, request.Proteins, request.Fats, request.Carbs)
+		data.Date, data.Proteins, data.Fats, data.Carbs)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Возникла внутреняя ошибка сервера"))
-		return
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return ErrNotFound
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("ok"))
+	w.WriteHeader(http.StatusNoContent)
+
+	return nil
 }
 
-func getHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	var response data
+func getHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) error {
+	var response Data
 
 	response.Date = r.URL.Query().Get("date")
 	if response.Date != "" {
 		if err := validateDate(response.Date); err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(err.Error()))
-			return
+			return ErrBadRequest
 		}
 	} else {
 		response.Date = currentDate()
 	}
 
-	err := db.QueryRow(context.Background(), "SELECT proteins, fats, carbs FROM pfc WHERE date=$1", response.Date).Scan(
+	err := db.QueryRow(context.Background(), "SELECT proteins, fats, carbs FROM pfc WHERE date=$1 LIMIT 1", response.Date).Scan(
 		&response.Proteins,
 		&response.Fats,
 		&response.Carbs,
 	)
 
-	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("404"))
-		return
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrNotFound
+		} else {
+			return err
+		}
 	}
 
 	body, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Возникла внутреняя ошибка сервера"))
-		return
+		return err
 	}
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(body)
+
+	return nil
 }
 
-func readRequestBody(r *http.Request) (data, error) {
+func readBodyData(r *http.Request) (*Data, error) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		return data{}, err
+		return nil, err
 	}
 
-	var requestBody data
+	var bodyData = &Data{}
 
-	err = json.Unmarshal(body, &requestBody)
+	err = json.Unmarshal(body, bodyData)
 	if err != nil {
-		return data{}, err
+		return nil, err
 	}
 
-	if requestBody.Date != "" {
-		if err = validateDate(requestBody.Date); err != nil {
-			return data{}, err
+	if bodyData.Date != "" {
+		if err = validateDate(bodyData.Date); err != nil {
+			return nil, err
 		}
 	} else {
-		requestBody.Date = currentDate()
+		bodyData.Date = currentDate()
 	}
 
-	return requestBody, nil
+	return bodyData, nil
 }
 
 func validateDate(s string) error {
@@ -172,6 +208,5 @@ func validateDate(s string) error {
 
 func currentDate() string {
 	year, month, day := time.Now().Date()
-
 	return fmt.Sprintf("%d-%d-%d", year, int(month), day)
 }
