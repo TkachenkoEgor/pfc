@@ -33,8 +33,8 @@ func main() {
 
 	var err error
 	const conString = "postgres://pfc:L0ktar0gar@127.0.0.1:5432/dpfc"
-	db, err = pgxpool.Connect(context.Background(), conString)
 
+	db, err = pgxpool.Connect(context.Background(), conString)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -58,6 +58,8 @@ func main() {
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatalln(err)
 	}
+
+	fmt.Println("hhhh")
 }
 
 func plusHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
