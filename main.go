@@ -25,9 +25,9 @@ type data struct {
 
 func main() {
 	var err error
-	const conString = "postgres://pfc:L0ktar0gar@127.0.0.1:5432/dpfc"
+	const connString = "postgres://pfc:L0ktar0gar@127.0.0.1:5432/dpfc"
 
-	db, err = pgxpool.Connect(context.Background(), conString)
+	db, err = pgxpool.Connect(context.Background(), connString)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -66,8 +66,9 @@ func plusHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	_, err = db.Exec(context.Background(), `
 		INSERT INTO pfc (date, proteins, fats, carbs)
 		VALUES ($1, $2, $3, $4)
-		ON CONFLICT (date) DO UPDATE SET
-		proteins = pfc.proteins + $2, fats = pfc.fats + $3, carbs = pfc.carbs + $4;`, request.Date, request.Proteins, request.Fats, request.Carbs)
+		ON CONFLICT (date) DO 
+        UPDATE SET proteins = pfc.proteins + $2, fats = pfc.fats + $3, carbs = pfc.carbs + $4;`,
+		request.Date, request.Proteins, request.Fats, request.Carbs)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Возникла внутреняя ошибка сервера"))
@@ -86,10 +87,13 @@ func minusHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	_, err = db.Exec(context.Background(), `
-		UPDATE pfc SET
-		proteins = GREATEST(pfc.proteins - $2, 0), fats = GREATEST(pfc.fats - $3, 0), carbs = GREATEST(pfc.carbs - $4, 0)
-		WHERE date = $1;`, request.Date, request.Proteins, request.Fats, request.Carbs)
+	_, err = db.Exec(context.Background(),
+		"UPDATE pfc "+
+			"SET proteins = GREATEST(pfc.proteins - $2, 0), "+
+			"fats = GREATEST(pfc.fats - $3, 0), "+
+			"carbs = GREATEST(pfc.carbs - $4, 0) "+
+			"WHERE date = $1",
+		request.Date, request.Proteins, request.Fats, request.Carbs)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Возникла внутреняя ошибка сервера"))
