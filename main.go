@@ -2,22 +2,16 @@ package main
 
 import (
 	"context"
-	"github.com/jackc/pgx/v4"
-
 	"encoding/json"
-
 	"errors"
-
 	"fmt"
-
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/julienschmidt/httprouter"
 	"io"
-
 	"log"
 	"net/http"
 	"time"
-
-	"github.com/julienschmidt/httprouter"
 )
 
 var db *pgxpool.Pool
@@ -30,7 +24,6 @@ type data struct {
 }
 
 func main() {
-
 	var err error
 	const conString = "postgres://pfc:L0ktar0gar@127.0.0.1:5432/dpfc"
 
