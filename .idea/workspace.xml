@@ -5,42 +5,84 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="54b79d40-8c10-4b50-896d-b66b5692694f" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/go_build" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/josharian/intern/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/josharian/intern/intern.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/josharian/intern/license.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/mailru/easyjson/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/mailru/easyjson/.travis.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/mailru/easyjson/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/mailru/easyjson/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/mailru/easyjson/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/mailru/easyjson/buffer/pool.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/mailru/easyjson/helpers.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/mailru/easyjson/jlexer/bytestostr.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/mailru/easyjson/jlexer/bytestostr_nounsafe.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/mailru/easyjson/jlexer/error.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/mailru/easyjson/jlexer/lexer.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/mailru/easyjson/jwriter/writer.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/mailru/easyjson/raw.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vendor/github.com/mailru/easyjson/unknown_fields.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/modules.txt" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/modules.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
   <component name="GOROOT" url="file:///snap/go/9605" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="HARD" />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/vendor/github.com/jackc/pgx/v4/conn.go" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/vendor/github.com/jackc/pgx/v4/pgxpool/pool.go" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/vendor/github.com/jackc/pgx/v4/rows.go" root0="SKIP_INSPECTION" />
+    <setting file="file:///snap/go/9605/src/errors/wrap.go" root0="SKIP_INSPECTION" />
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectId" id="28C7kL1zzwDMxXNqvChqjA3luzW" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "DefaultGoTemplateProperty": "Go File",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.go.format.on.save.advertiser.fired": "true",
     "RunOnceActivity.go.formatter.settings.were.checked": "true",
     "RunOnceActivity.go.migrated.go.modules.settings": "true",
     "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "RunOnceActivity.go.vendoring.notification.had.been.shown": "true",
     "RunOnceActivity.go.watchers.conflict.with.on.save.actions.check.performed": "true",
     "WebServerToolWindowFactoryState": "false",
     "go.import.settings.migrated": "true",
     "go.sdk.automatically.set": "true",
     "last_opened_file_path": "/home/egor/pfc",
-    "settings.editor.selected.configurable": "preferences.sourceCode.Go"
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   },
   "keyToStringList": {
     "DatabaseDriversLRU": [
@@ -48,7 +90,7 @@
     ]
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Go Build.go build pfc">
     <configuration name="go build pfc" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
       <module name="pfc" />
       <working_directory value="$PROJECT_DIR$" />
@@ -58,6 +100,40 @@
       <filePath value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
+    <configuration name="go build" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="pfc" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <package value="pfc" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <output_directory value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="rest-api | #1" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/rest-api.http" requestIdentifier="#1" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="rest-api | #2" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/rest-api.http" index="2" requestIdentifier="#2" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="rest-api | #3" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/rest-api.http" index="3" requestIdentifier="#3" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Go Build.go build pfc" />
+      <item itemvalue="Go Build.go build" />
+      <item itemvalue="HTTP Request.rest-api | #2" />
+      <item itemvalue="HTTP Request.rest-api | #3" />
+      <item itemvalue="HTTP Request.rest-api | #1" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="HTTP Request.rest-api | #1" />
+        <item itemvalue="HTTP Request.rest-api | #2" />
+        <item itemvalue="HTTP Request.rest-api | #3" />
+        <item itemvalue="Go Build.go build" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
@@ -75,9 +151,11 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="added go.sum and vendor dir" />
     <MESSAGE value="fixed code style" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed code style" />
+    <MESSAGE value="review N1" />
+    <option name="LAST_COMMIT_MESSAGE" value="review N1" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

@@ -43,7 +43,6 @@ func realMain() int {
 		log.Print(err)
 		return 1
 	}
-	defer db.Close()
 
 	router := httprouter.New()
 	router.POST("/pfc", handler(plusHandler))
@@ -62,8 +61,6 @@ func realMain() int {
 	if err = server.ListenAndServe(); err != nil {
 		log.Fatalln(err)
 	}
-
-	fmt.Println("hhhh")
 
 	return 0
 }
@@ -85,7 +82,6 @@ func handler(f handlerFunc) httprouter.Handle {
 				writer.WriteHeader(http.StatusNotFound)
 			} else {
 				writer.WriteHeader(http.StatusInternalServerError)
-				writer.Write([]byte(err.Error()))
 			}
 			return
 		}
@@ -129,7 +125,8 @@ func minusHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) e
 	if err != nil {
 		return err
 	}
-	if tag.RowsAffected() == 0 {
+
+	if tag.RowsAffected() != 1 {
 		return ErrNotFound
 	}
 
@@ -167,7 +164,7 @@ func getHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) err
 	body, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Возникла внутреняя ошибка сервера"))
+		fmt.Println("Возникла внутреняя ошибка сервера")
 		return err
 	}
 
