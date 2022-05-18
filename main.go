@@ -28,8 +28,6 @@ func (d *Data) Error() string {
 	return ""
 }
 
-var ErrData = &Data{}
-
 func main() {
 	os.Exit(realMain())
 }
@@ -43,6 +41,7 @@ func realMain() int {
 		log.Print(err)
 		return 1
 	}
+	defer db.Close()
 
 	router := httprouter.New()
 	router.POST("/pfc", handler(plusHandler))
@@ -115,12 +114,12 @@ func minusHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) e
 		return err
 	}
 
-	tag, err := db.Exec(context.Background(),
-		"UPDATE pfc "+
-			"SET proteins = GREATEST(pfc.proteins - $2, 0), "+
-			"fats = GREATEST(pfc.fats - $3, 0), "+
-			"carbs = GREATEST(pfc.carbs - $4, 0) "+
-			"WHERE date = $1",
+	tag, err := db.Exec(context.Background(), `
+		UPDATE pfc 
+		SET proteins = GREATEST(pfc.proteins - $2, 0),
+		fats = GREATEST(pfc.fats - $3, 0),
+		carbs = GREATEST(pfc.carbs - $4, 0) 
+		WHERE date = $1`,
 		data.Date, data.Proteins, data.Fats, data.Carbs)
 	if err != nil {
 		return err
@@ -147,7 +146,11 @@ func getHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) err
 		response.Date = currentDate()
 	}
 
-	err := db.QueryRow(context.Background(), "SELECT proteins, fats, carbs FROM pfc WHERE date=$1 LIMIT 1", response.Date).Scan(
+	err := db.QueryRow(context.Background(),
+		"SELECT proteins, fats, carbs "+
+			"FROM pfc "+
+			"WHERE date=$1 "+
+			"LIMIT 1", response.Date).Scan(
 		&response.Proteins,
 		&response.Fats,
 		&response.Carbs,
@@ -169,7 +172,7 @@ func getHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) err
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write(body)
+	_, _ = w.Write(body)
 
 	return nil
 }
@@ -182,7 +185,7 @@ func readBodyData(r *http.Request) (*Data, error) {
 
 	var bodyData = &Data{}
 
-	err = json.Unmarshal(body, bodyData)
+	err = json.Unmarshal(body, &bodyData)
 	if err != nil {
 		return nil, err
 	}
