@@ -24,10 +24,6 @@ type Data struct {
 	Carbs    float64 `json:"carbs"`
 }
 
-func (d *Data) Error() string {
-	return ""
-}
-
 func main() {
 	os.Exit(realMain())
 }
